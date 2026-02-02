@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# PyTorch
+*.pth
+*.pt
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Data
+data/flowers/train/
+data/flowers/test/
+!data/flowers/train/.gitkeep
+!data/flowers/test/.gitkeep
+
+# Checkpoints and Logs
+checkpoints/*.pth
+!checkpoints/best_model.pth
+checkpoints/logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TensorBoard
+runs/
+
+# Predictions
+predictions/
+*.png
+*.jpg
+*.jpeg
+
+# CSV
+*.csv
+!config.json
+
+# Temporary files
+*.tmp
+*.bak
+*.cache

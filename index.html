@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>花卉识别测试系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .image-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-item label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .info-item .value {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .predictions {
+            margin-top: 20px;
+        }
+
+        .predictions h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .prediction-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .prediction-item .class-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .prediction-item .probability {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .prediction-item.correct {
+            border-left: 4px solid #28a745;
+        }
+
+        .prediction-item.incorrect {
+            border-left: 4px solid #dc3545;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .class-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .class-btn {
+            padding: 12px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .class-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .class-btn.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .button-section {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .result-message {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .result-message.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .result-message.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .class-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 花卉识别测试系统</h1>
+        <p class="subtitle">从test目录随机选择图片，你手动判断正确类别并与模型预测对比</p>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="label">当前轮次</div>
+                <div class="value" id="currentRound">0 / 20</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">正确数量</div>
+                <div class="value" id="correctCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">准确率</div>
+                <div class="value" id="accuracy">0.00%</div>
+            </div>
+        </div>
+
+        <div class="result-message" id="resultMessage"></div>
+
+        <div class="main-content">
+            <div class="image-section">
+                <div class="image-container">
+                    <img id="currentImage" src="" alt="等待加载图片..." style="display: none;">
+                    <div id="loadingText" class="loading">点击"下一张图片"开始测试</div>
+                </div>
+                <p id="imagePath" style="color: #666; margin-top: 10px;"></p>
+            </div>
+
+            <div class="info-section">
+                <div class="info-item">
+                    <label>模型预测类别</label>
+                    <div class="value" id="modelPrediction">-</div>
+                </div>
+                <div class="info-item">
+                    <label>模型置信度</label>
+                    <div class="value" id="modelConfidence">-</div>
+                </div>
+
+                <div class="predictions">
+                    <h3>📊 模型预测概率</h3>
+                    <div id="predictionsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <h3>🎯 请选择正确的类别</h3>
+            <div class="class-buttons" id="classButtons"></div>
+        </div>
+
+        <div class="button-section">
+            <button class="btn btn-primary" id="nextBtn" onclick="nextImage()">下一张图片</button>
+            <button class="btn btn-secondary" id="resetBtn" onclick="resetTest()">重置测试</button>
+        </div>
+    </div>
+
+    <script>
+        let currentRound = 0;
+        const totalRounds = 20;
+        let correctCount = 0;
+        let classToIdx = {};
+        let currentData = null;
+        let selectedClass = null;
+
+        const classToChinese = {
+            'daisy': '雏菊',
+            'dandelion': '蒲公英',
+            'rose': '玫瑰',
+            'sunflower': '向日葵',
+            'tulip': '郁金香'
+        };
+
+        async function loadClasses() {
+            try {
+                const response = await fetch('/get_classes');
+                classToIdx = await response.json();
+                renderClassButtons();
+            } catch (error) {
+                console.error('加载类别失败:', error);
+            }
+        }
+
+        function renderClassButtons() {
+            const container = document.getElementById('classButtons');
+            container.innerHTML = '';
+            
+            Object.entries(classToIdx).forEach(([className, idx]) => {
+                const btn = document.createElement('button');
+                btn.className = 'class-btn';
+                btn.innerHTML = `${idx}. ${classToChinese[className]}`;
+                btn.onclick = () => selectClass(idx, className, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectClass(idx, className, btn) {
+            if (currentRound >= totalRounds) return;
+            
+            document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedClass = idx;
+            
+            checkAnswer();
+        }
+
+        async function nextImage() {
+            if (currentRound >= totalRounds) {
+                showFinalResult();
+                return;
+            }
+
+            if (currentRound > 0 && selectedClass === null) {
+                alert('请先选择正确的类别！');
+                return;
+            }
+
+            try {
+                document.getElementById('loadingText').style.display = 'block';
+                document.getElementById('currentImage').style.display = 'none';
+                document.getElementById('nextBtn').disabled = true;
+
+                const response = await fetch('/get_random_image');
+                currentData = await response.json();
+
+                document.getElementById('currentImage').src = currentData.image;
+                document.getElementById('currentImage').style.display = 'block';
+                document.getElementById('loadingText').style.display = 'none';
+                document.getElementById('imagePath').textContent = `图片: ${currentData.image_path}`;
+                document.getElementById('modelPrediction').textContent = `${currentData.predicted_label}. ${idxToChinese(currentData.predicted_label)}`;
+                document.getElementById('modelConfidence').textContent = `${currentData.confidence.toFixed(2)}%`;
+
+                renderPredictions(currentData.predictions);
+
+                document.getElementById('nextBtn').disabled = false;
+                selectedClass = null;
+                document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('selected'));
+                document.getElementById('resultMessage').style.display = 'none';
+
+            } catch (error) {
+                console.error('加载图片失败:', error);
+                alert('加载图片失败，请重试');
+                document.getElementById('nextBtn').disabled = false;
+            }
+        }
+
+        function renderPredictions(predictions) {
+            const container = document.getElementById('predictionsList');
+            container.innerHTML = '';
+
+            predictions.forEach((pred, index) => {
+                const div = document.createElement('div');
+                div.className = 'prediction-item';
+                if (index === 0) {
+                    div.classList.add('correct');
+                }
+                div.innerHTML = `
+                    <span class="class-name">${pred.class}</span>
+                    <span class="probability">${pred.probability.toFixed(2)}%</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function checkAnswer() {
+            if (selectedClass === null) return;
+
+            const isCorrect = selectedClass === currentData.predicted_label;
+            
+            if (isCorrect) {
+                correctCount++;
+            }
+
+            currentRound++;
+            updateStats();
+
+            const resultMsg = document.getElementById('resultMessage');
+            resultMsg.style.display = 'block';
+            resultMsg.className = `result-message ${isCorrect ? 'correct' : 'incorrect'}`;
+            resultMsg.innerHTML = isCorrect 
+                ? `✅ 正确！你的选择与模型预测一致`
+                : `❌ 不同！你的选择: ${idxToChinese(selectedClass)}，模型预测: ${idxToChinese(currentData.predicted_label)}`;
+        }
+
+        function updateStats() {
+            document.getElementById('currentRound').textContent = `${currentRound} / ${totalRounds}`;
+            document.getElementById('correctCount').textContent = correctCount;
+            
+            const accuracy = currentRound > 0 ? (correctCount / currentRound * 100).toFixed(2) : 0;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+        }
+
+        function idxToChinese(idx) {
+            return Object.keys(classToIdx).find(key => classToIdx[key] === idx) || '';
+        }
+
+        function showFinalResult() {
+            const accuracy = (correctCount / totalRounds * 100).toFixed(2);
+            const resultMsg = document.getElementById('resultMessage');
+            resultMsg.style.display = 'block';
+            resultMsg.className = 'result-message correct';
+            resultMsg.innerHTML = `
+                <h3>🎉 测试完成！</h3>
+                <p style="margin: 10px 0;"><strong>总轮次:</strong> ${totalRounds}</p>
+                <p style="margin: 10px 0;"><strong>正确数量:</strong> ${correctCount}</p>
+                <p style="margin: 10px 0;"><strong>准确率:</strong> ${accuracy}%</p>
+                <p style="margin: 15px 0 0 0; color: #666;">点击"重置测试"开始新一轮测试</p>
+            `;
+            
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('nextBtn').textContent = '测试已完成';
+        }
+
+        async function resetTest() {
+            if (currentRound > 0 && !confirm('确定要重置测试吗？当前进度将丢失。')) {
+                return;
+            }
+
+            try {
+                await fetch('/reset');
+                currentRound = 0;
+                correctCount = 0;
+                selectedClass = null;
+                currentData = null;
+                
+                updateStats();
+                
+                document.getElementById('currentImage').style.display = 'none';
+                document.getElementById('loadingText').style.display = 'block';
+                document.getElementById('loadingText').textContent = '点击"下一张图片"开始测试';
+                document.getElementById('imagePath').textContent = '';
+                document.getElementById('modelPrediction').textContent = '-';
+                document.getElementById('modelConfidence').textContent = '-';
+                document.getElementById('predictionsList').innerHTML = '';
+                document.getElementById('resultMessage').style.display = 'none';
+                document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('selected'));
+                
+                document.getElementById('nextBtn').disabled = false;
+                document.getElementById('nextBtn').textContent = '下一张图片';
+
+            } catch (error) {
+                console.error('重置失败:', error);
+                alert('重置失败，请重试');
+            }
+        }
+
+        loadClasses();
+    </script>
+</body>
+</html>
