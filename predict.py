@@ -11,7 +11,7 @@ from models.model import create_model
 
 class FlowerPredictor:
     def __init__(self, checkpoint_path, device=None):
-        self.device = device if device else torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = device if device else torch.device('cpu')
         print(f"Using device: {self.device}")
 
         checkpoint = torch.load(checkpoint_path, map_location=self.device)

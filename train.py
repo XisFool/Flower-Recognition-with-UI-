@@ -14,7 +14,7 @@ from utils.data_loader import get_dataloaders
 class Trainer:
     def __init__(self, config):
         self.config = config
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         print(f"Using device: {self.device}")
 
         self.train_loader, self.val_loader, self.test_loader, self.class_to_idx = get_dataloaders(

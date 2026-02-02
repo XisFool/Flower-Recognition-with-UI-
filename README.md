@@ -41,6 +41,16 @@ Flower/
 
 ## 环境配置
 
+### 系统要求
+
+- **Python版本**: 3.9 或更高版本
+- **操作系统**: Windows, Linux, macOS
+- **内存**: 建议 8GB 以上 RAM
+- **GPU**: 可选
+  - 默认使用 CPU 训练
+  - 如需使用 GPU 加速，需要修改代码中的设备设置
+  - GPU 训练速度通常比 CPU 快 10-50 倍
+
 ### 1. 创建虚拟环境
 
 ```bash
@@ -138,6 +148,11 @@ config = {
     'checkpoint_dir': 'checkpoints'  # 检查点保存目录
 }
 ```
+
+**注意**: 
+- 默认使用 CPU 训练
+- 如需使用 GPU，请修改代码中的 `self.device = torch.device('cpu')` 为 `torch.device('cuda')`
+- GPU 训练速度通常比 CPU 快 10-50 倍
 
 ### 查看训练过程
 

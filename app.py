@@ -16,7 +16,7 @@ from utils.data_loader import load_flower_dataset
 app = Flask(__name__)
 CORS(app)
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 print(f"Using device: {device}")
 
 checkpoint = torch.load('checkpoints/best_model.pth', map_location=device)
