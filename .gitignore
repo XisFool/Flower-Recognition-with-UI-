@@ -40,8 +40,6 @@ data/flowers/test/
 !data/flowers/test/.gitkeep
 
 # Checkpoints and Logs
-checkpoints/*.pth
-!checkpoints/best_model.pth
 checkpoints/logs/
 *.log
 
